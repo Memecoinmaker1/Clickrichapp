@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoClicker</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+            width: 90%;
+            margin-bottom: 20px;
+        }
+        #stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        #points, #level {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #progress-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.5s ease-in-out;
+        }
+        .button {
+            font-size: 18px;
+            padding: 15px 30px;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            outline: none;
+            margin: 10px 0;
+            width: 100%;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        #clickButton {
+            background-color: #4CAF50;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        #powerUpButton {
+            background-color: #ff9800;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+        #cryptoMiningButton {
+            background-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .button:active {
+            transform: translateY(1px);
+        }
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        #powerUpTimer, #cryptoMiningInfo {
+            font-size: 16px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .plus-one {
+            position: fixed;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            pointer-events: none;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+        }
+        .level-up {
+            position: fixed;
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff6b6b;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+        }
+        #cryptoMiningImage {
+            width: 80px;
+            height: 80px;
+            margin: 10px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        #cryptoMiningImage:hover {
+            transform: scale(1.1);
+        }
+        #leaderboard {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+            width: 90%;
+        }
+        #leaderboard h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+        #leaderboard-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        #leaderboard-list li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        #playerName {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        #playerName::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="stats">
+            <div id="points">0 Punkte</div>
+            <div id="level">Level 1</div>
+        </div>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <button id="clickButton" class="button">Klicken</button>
+        <button id="powerUpButton" class="button">Power-Up (100 Punkte)</button>
+        <div id="powerUpTimer"></div>
+        <img id="cryptoMiningImage" src="https://example.com/path/to/your/crypto-mining-image.png" alt="Crypto Mining Gerät">
+        <button id="cryptoMiningButton" class="button">Crypto Mining (500 Punkte)</button>
+        <div id="cryptoMiningInfo"></div>
+        <input type="text" id="playerName" placeholder="Dein Name" maxlength="20">
+    </div>
+
+    <div id="leaderboard">
+        <h2>Bestenliste</h2>
+        <ol id="leaderboard-list"></ol>
+    </div>
+
+    <!-- Audio-Elemente bleiben unverändert -->
+
+    <script>
+        let points = 0;
+        let level = 1;
+        let pointMultiplier = 1;
+        let powerUpActive = false;
+        let powerUpCost = 100;
+        let cryptoMiners = 0;
+        let cryptoMinerCost = 500;
+        const pointsDisplay = document.getElementById('points');
+        const levelDisplay = document.getElementById('level');
+        const clickButton = document.getElementById('clickButton');
+        const powerUpButton = document.getElementById('powerUpButton');
+        const powerUpTimer = document.getElementById('powerUpTimer');
+        const cryptoMiningButton = document.getElementById('cryptoMiningButton');
+        const cryptoMiningInfo = document.getElementById('cryptoMiningInfo');
+        const clickSounds = document.querySelectorAll('.clickSound');
+        const levelUpSound = document.getElementById('levelUpSound');
+        const progressBar = document.getElementById('progress-bar');
+        const playerNameInput = document.getElementById('playerName');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        let currentSoundIndex = 0;
+
+        const levelThresholds = [100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000];
+
+        clickButton.addEventListener('click', () => {
+            points += 1 * pointMultiplier;
+            updateDisplay();
+            createPlusOne();
+            playClickSound();
+            updateProgressBar();
+            checkLevelUp();
+            updateLeaderboard();
+        });
+
+        powerUpButton.addEventListener('click', activatePowerUp);
+        cryptoMiningButton.addEventListener('click', buyCryptoMiner);
+
+        function activatePowerUp() {
+            if (points >= powerUpCost && !powerUpActive) {
+                points -= powerUpCost;
+                powerUpActive = true;
+                pointMultiplier = 2;
+                powerUpButton.disabled = true;
+                let timeLeft = 30;
+
+                const powerUpInterval = setInterval(() => {
+                    timeLeft--;
+                    powerUpTimer.textContent = `Power-Up aktiv: ${timeLeft}s`;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(powerUpInterval);
+                        powerUpActive = false;
+                        pointMultiplier = 1;
+                        powerUpButton.disabled = false;
+                        powerUpTimer.textContent = '';
+                    }
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function buyCryptoMiner() {
+            if (points >= cryptoMinerCost) {
+                points -= cryptoMinerCost;
+                cryptoMiners++;
+                cryptoMinerCost = Math.floor(cryptoMinerCost * 1.5);
+                updateDisplay();
+                animateCryptoMiningImage();
+            }
+        }
+
+        function animateCryptoMiningImage() {
+            const image = document.getElementById('cryptoMiningImage');
+            image.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                image.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function updateDisplay() {
+            pointsDisplay.textContent = `${Math.floor(points)} Punkte`;
+            levelDisplay.textContent = `Level ${level}`;
+            powerUpButton.textContent = `Power-Up (${powerUpCost} Punkte)`;
+            powerUpButton.disabled = points < powerUpCost || powerUpActive;
+            cryptoMiningButton.textContent = `Crypto Mining (${cryptoMinerCost} Punkte)`;
+            cryptoMiningButton.disabled = points < cryptoMinerCost;
+            cryptoMiningInfo.textContent = `Crypto Miner: ${cryptoMiners} (${(cryptoMiners * 0.1).toFixed(1)}/s)`;
+        }
+
+        function playClickSound() {
+            clickSounds[currentSoundIndex].play();
+            currentSoundIndex = (currentSoundIndex + 1) % clickSounds.length;
+        }
+
+        function updateProgressBar() {
+            const currentThreshold = levelThresholds[level - 1] || levelThresholds[levelThresholds.length - 1];
+            const previousThreshold = level > 1 ? levelThresholds[level - 2] : 0;
+            const progress = ((points - previousThreshold) / (currentThreshold - previousThreshold)) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function checkLevelUp() {
+            if (levelThresholds[level - 1] && points >= levelThresholds[level - 1]) {
+                level++;
+                levelDisplay.textContent = `Level ${level}`;
+                createLevelUpAnimation();
+                levelUpSound.play();
+                updateProgressBar();
+            }
+        }
+
+        function createPlusOne() {
+            const plusOne = document.createElement('div');
+            plusOne.textContent = `+${1 * pointMultiplier}`;
+            plusOne.className = 'plus-one';
+            
+            const randomX = Math.random() * (window.innerWidth - 50);
+            const startY = window.innerHeight;
+            
+            plusOne.style.left = `${randomX}px`;
+            plusOne.style.top = `${startY}px`;
+            document.body.appendChild(plusOne);
+
+            let start;
+            function animate(timestamp) {
+                if (!start) start = timestamp;
+                const progress = timestamp - start;
+                const newY = startY - progress / 2;
+                
+                plusOne.style.top = `${newY}px`;
+                plusOne.style.opacity = 1 - progress / 2000;
+
+                if (progress < 2000) {
+                    requestAnimationFrame(animate);
+                } else {
+                    document.body.removeChild(plusOne);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function createLevelUpAnimation() {
+            const levelUp = document.createElement('div');
+            levelUp.textContent = 'Level Up!';
+            levelUp.className = 'level-up';
+            
+            levelUp.style.left = '50%';
+            levelUp.style.top = '50%';
+            levelUp.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(levelUp);
+
+            let start;
+            function animate(timestamp) {
+                if (!start) start = timestamp;
+                const progress = timestamp - start;
+                
+                levelUp.style.opacity = 1 - progress / 2000;
+                levelUp.style.transform = `translate(-50%, -50%) scale(${1 + progress / 2000})`;
+
+                if (progress < 2000) {
+                    requestAnimationFrame(animate);
+                } else {
+                    document.body.removeChild(levelUp);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Crypto Mining-Logik
+        setInterval(() => {
+            points += cryptoMiners * 0.1;
+            updateDisplay();
+            updateProgressBar();
+            checkLevelUp();
+            updateLeaderboard();
+        }, 1000);
+
+        // Leaderboard-Funktionen
+        function updateLeaderboard() {
+            const playerName = playerNameInput.value.trim() || 'Anonym';
+            let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+            
+            // Aktualisiere oder füge den aktuellen Spieler hinzu
+            const playerIndex = leaderboard.findIndex(entry => entry.name === playerName);
+            if (playerIndex !== -1) {
+                leaderboard[playerIndex].points = Math.max(leaderboard[playerIndex].points, points);
+            } else {
+                leaderboard.push({ name: playerName, points: points });
+            }
+
+            // Sortiere das Leaderboard nach Punkten
+            leaderboard.sort((a, b) => b.points - a.points);
+
+            // Begrenze das Leaderboard auf die Top 10
+            leaderboard = leaderboard.slice(0, 10);
+
+            // Speichere das aktualisierte Leaderboard
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+
+            // Aktualisiere die Anzeige
+            displayLeaderboard(leaderboard);
+        }
+
+        function displayLeaderboard(leaderboard) {
+            leaderboardList.innerHTML = '';
+            leaderboard.forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${index + 1}. ${entry.name}: ${Math.floor(entry.points)} Punkte`;
+                leaderboardList.appendChild(li);
+            });
+        }
+
+        // Initialisiere die Anzeige
+        updateDisplay();
+        updateProgressBar();
+        updateLeaderboard();
+
+        // Event-Listener für Namensänderungen
+        playerNameInput.addEventListener('change', updateLeaderboard);
+    </script>
+</body>
+</html>
