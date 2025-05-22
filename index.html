@@ -86,6 +86,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            margin-top: -150px;
         }
         #clickButton img {
             width: 100%;
@@ -252,8 +253,8 @@
         }
         #airdropImage {
             position: fixed;
-            width: 100px;
-            height: 100px;
+            width: 300px;
+            height: 300px;
             cursor: pointer;
             display: none;
         }
@@ -300,28 +301,105 @@
                 padding: 8px 15px;
             }
         }
+        @media (max-width: 600px) {
+            .upgrade-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .upgrade-container div {
+                margin-bottom: 20px;
+            }
+            #cryptoMiningImage, #lidlBerlinerImage {
+                width: 200px;
+                height: 200px;
+            }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .modal-content {
+            background-color: #fff;
+            color: #000;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        h2 {
+            color: #4CAF50;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .upgrade-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div id="game" class="game-container">
         <div id="stats">
             <div id="level">Level 1</div>
-            <div id="points">0 Marküses</div>
+            <div id="points">0 Thilonen</div>
         </div>
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
-        <button id="clickButton">
-            <img src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2024-08-19_at_20.30.59-removebg-preview.png" alt="Click-Münze">
+        <button id="clickButton" style="margin-top: -150px;">
+            <img src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2025-05-22_at_19.31.50-removebg-preview.png" alt="Click-Münze" style="width: 400%; height: 400%;">
         </button>
         <div id="powerUpTimer"></div>
     </div>
 
     <div id="upgrades" class="game-container" style="display: none;">
         <h2>Upgrades</h2>
-        <img id="cryptoMiningImage" src="https://example.com/path/to/your/crypto-mining-image.png" alt="Crypto Mining Gerät">
-        <button id="cryptoMiningButton" class="button">Crypto Mining (500 Marküses)</button>
-        <div id="cryptoMiningInfo"></div>
+        <div class="upgrade-container">
+            <div>
+                <img id="cryptoMiningImage" src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/lidl%20Crossaint-Photoroom.png" alt="Crypto Mining Gerät" style="width: 300px; height: 300px; object-fit: cover;">
+                <button id="cryptoMiningButton" class="button">Lidl Crossaint (${cryptoMinerCost} Thilonen)</button>
+                <div id="cryptoMiningInfo">Thilonen Miner: ${cryptoMiners} (${(cryptoMiners * 0.1).toFixed(1)}/s)</div>
+            </div>
+            <div>
+                <img id="lidlBerlinerImage" src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/Lidl%20berliner-Photoroom.png" alt="Lidl Berliner" style="width: 300px; height: 300px; object-fit: cover;">
+                <button id="lidlBerlinerButton" class="button">Lidl Berliner (${lidlBerlinerCost} Thilonen)</button>
+                <div id="lidlBerlinerInfo">Lidl Berliner: ${lidlBerliners} (${(lidlBerliners * 1).toFixed(1)}/s)</div>
+            </div>
+        </div>
     </div>
 
     <div id="leaderboard" style="display: none;">
@@ -353,17 +431,34 @@
         <button class="menu-button" data-section="goals">Ziele</button>
     </div>
 
-    <div id="airdropTimer">Marküsischer Airdrop in: 2:00</div>
-    <img id="airdropImage" src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2024-08-19_at_20.30.59-removebg-preview.png" alt="Airdrop" style="display: none; position: fixed; width: 100px; height: 100px; cursor: pointer;">
+    <div id="airdropTimer">Thilonischer Airdrop in: 2:00</div>
+    <img id="airdropImage" src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2025-05-22_at_19.31.50-removebg-preview.png" alt="Airdrop" style="display: none; position: fixed; width: 300px; height: 300px; cursor: pointer;">
 
-    <audio class="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-    <audio class="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-    <audio class="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-    <audio class="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-    <audio class="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
+    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
+    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
+    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
+    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
     <audio id="levelUpSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
-    <audio id="hundredPointsSound" src="https://www.soundjay.com/human/sounds/cheering-3.mp3" preload="auto"></audio>
-    <audio id="airdropSound" src="https://www.soundjay.com/buttons/sounds/button-09a.mp3" preload="auto"></audio>
+    <audio id="hundredPointsSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/wow-171498.mp3" preload="auto"></audio>
+    <audio id="airdropSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/splash-01-35899.mp3" preload="auto"></audio>
+    <audio id="upgradeSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/coin-257878.mp3" preload="auto"></audio>
+
+    <div id="goalModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">&times;</span>
+            <h2>Ziele</h2>
+            <ul id="goalsList">
+                <li>Bei jedem Level Up gibt es einen Doppelten Click Bonus für eine Minute!</li>
+                <li>Besiege die Gegner, indem du Punkte sammelst und auf das Bild des aktuellen Gegners drückst.</li>
+                <li>Bei Erreichen des 10. Levels wird ein neuer Gegner freigeschaltet.</li>
+                <li>Sammle durch 2-minütige Airdrops zusätzliche Punkte, wenn du schnell genug bist.</li>
+                <li>Trage deinen Namen in die Rangliste ein.</li>
+                <li>Kaufe durch deine Punkte Krypto-Mining-Geräte, die dir offline Zusatzpunkte liefern!</li>
+            </ul>
+            <button id="startGameButton">Spiel starten</button>
+        </div>
+    </div>
 
     <script>
         let points = 0;
@@ -394,6 +489,8 @@
         let currentSoundIndex = 0;
         let airdropTimerInterval;
         let airdropTimeLeft = 120;
+        let lidlBerlinerCost = 1500; // Anfangskosten für den Lidl Berliner
+        let lidlBerliners = 0; // Anzahl der Lidl Berliner
 
         const levelThresholds = [100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000];
 
@@ -475,6 +572,7 @@
                 cryptoMinerCost = Math.floor(cryptoMinerCost * 1.5);
                 updateDisplay();
                 animateCryptoMiningImage();
+                playUpgradeSound();
                 saveGame();
             }
         }
@@ -488,11 +586,15 @@
         }
 
         function updateDisplay() {
-            pointsDisplay.textContent = `${Math.floor(points)} Marküses`;
+            pointsDisplay.textContent = `${Math.floor(points)} Thilonen`;
             levelDisplay.textContent = `Level ${level}`;
-            cryptoMiningButton.textContent = `Crypto Mining (${cryptoMinerCost} Marküses)`;
+            cryptoMiningButton.textContent = `Lidl Crossaint (${cryptoMinerCost} Thilonen)`;
             cryptoMiningButton.disabled = points < cryptoMinerCost;
-            cryptoMiningInfo.textContent = `Crypto Miner: ${cryptoMiners} (${(cryptoMiners * 0.1).toFixed(1)}/s)`;
+            cryptoMiningInfo.textContent = `Thilonen Miner: ${cryptoMiners} (${(cryptoMiners * 0.1).toFixed(1)}/s)`;
+            
+            lidlBerlinerButton.textContent = `Lidl Berliner (${lidlBerlinerCost} Thilonen)`;
+            lidlBerlinerButton.disabled = points < lidlBerlinerCost;
+            lidlBerlinerInfo.textContent = `Lidl Berliner: ${lidlBerliners} (${(lidlBerliners * 1).toFixed(1)}/s)`;
         }
 
         function playClickSound() {
@@ -538,8 +640,10 @@
             plusOne.style.top = `${Math.random() * (window.innerHeight - 50)}px`;
 
             const plusOneImage = document.createElement('img');
-            plusOneImage.src = 'https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2024-08-19_at_20.30.59-removebg-preview.png';
+            plusOneImage.src = 'https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2025-05-22_at_19.31.50-removebg-preview.png';
             plusOneImage.className = 'plus-one-image';
+            plusOneImage.style.width = '100px';
+            plusOneImage.style.height = '100px';
             plusOne.appendChild(plusOneImage);
 
             const plusOneText = document.createElement('span');
@@ -622,7 +726,7 @@
             leaderboardList.innerHTML = '';
             leaderboard.forEach((entry, index) => {
                 const li = document.createElement('li');
-                li.textContent = `${index + 1}. ${entry.name}: ${Math.floor(entry.points)} Marküses`;
+                li.textContent = `${index + 1}. ${entry.name}: ${Math.floor(entry.points)} Thilonen`;
                 leaderboardList.appendChild(li);
             });
         }
@@ -661,7 +765,7 @@
         function updateAirdropTimer() {
             const minutes = Math.floor(airdropTimeLeft / 60);
             const seconds = airdropTimeLeft % 60;
-            const timerText = `Marküsischer Airdrop in: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            const timerText = `Thilonischer Airdrop in: ${minutes}:${seconds.toString().padStart(2, '0')}`;
             console.log("Aktualisiere Timer-Anzeige:", timerText);
             airdropTimer.textContent = timerText;
         }
@@ -674,6 +778,13 @@
             airdropImage.style.left = `${randomX}px`;
             airdropImage.style.top = `${randomY}px`;
             airdropImage.style.display = 'block';
+
+            // Airdrop-Sound abspielen
+            if (audioEnabled) {
+                airdropSound.play().catch(error => {
+                    console.error("Fehler beim Abspielen des Airdrop-Sounds:", error);
+                });
+            }
 
             setTimeout(() => {
                 console.log("Airdrop-Timeout abgelaufen, verstecke Airdrop");
@@ -690,13 +801,37 @@
             airdropImage.style.display = 'none';
             startAirdropTimer();
             if (audioEnabled) {
-                airdropSound.play().catch(() => {});
+                airdropSound.play().catch(error => {
+                    console.error("Fehler beim Abspielen des Sounds:", error);
+                });
             }
         });
 
-        // Starten Sie den Airdrop-Timer, wenn die Seite geladen ist
+        function showGoals() {
+            const modal = document.getElementById('goalModal');
+            modal.style.display = 'block';
+
+            const closeButton = document.getElementById('closeModal');
+            closeButton.onclick = function() {
+                modal.style.display = 'none';
+            }
+
+            const startGameButton = document.getElementById('startGameButton');
+            startGameButton.onclick = function() {
+                modal.style.display = 'none';
+                startAirdropTimer();
+            }
+
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+
         window.addEventListener('load', () => {
-            console.log("Seite geladen, starte Airdrop-Timer");
+            console.log("Seite geladen, zeige Ziele an");
+            showGoals();
             startAirdropTimer();
         });
 
@@ -722,6 +857,35 @@
         updateDisplay();
         updateProgressBar();
         updateLeaderboard();
+
+        lidlBerlinerButton.addEventListener('click', buyLidlBerliner);
+
+        function buyLidlBerliner() {
+            if (points >= lidlBerlinerCost) {
+                points -= lidlBerlinerCost;
+                lidlBerliners++;
+                lidlBerlinerCost = Math.floor(lidlBerlinerCost * 1.5); // Preis erhöhen
+                updateDisplay();
+                animateLidlBerlinerImage();
+                playUpgradeSound();
+                saveGame();
+            }
+        }
+
+        function animateLidlBerlinerImage() {
+            const image = document.getElementById('lidlBerlinerImage');
+            image.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                image.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function playUpgradeSound() {
+            const upgradeSound = document.getElementById('upgradeSound');
+            upgradeSound.play().catch(error => {
+                console.error("Fehler beim Abspielen des Upgrade-Sounds:", error);
+            });
+        }
     </script>
 </body>
 </html>
