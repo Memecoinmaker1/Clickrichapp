@@ -1,891 +1,424 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CryptoClicker</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple 3D Shooter</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: #ffffff;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .game-container {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            max-width: 500px;
-            width: 90%;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #stats {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px;
-            border-radius: 10px;
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            box-sizing: border-box;
-        }
-        #level {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        #points {
-            font-size: 18px;
-        }
-        #progress-container {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            height: 10px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            width: 100%;
-        }
-        #progress-bar {
-            width: 0%;
-            height: 100%;
-            background-color: #4CAF50;
-            transition: width 0.5s ease-in-out;
-        }
-        #clickButton {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.1s;
-            user-select: none;
-            -webkit-user-drag: none;
-            width: 300px;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            margin-top: -150px;
-        }
-        #clickButton img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        #clickButton:active {
-            transform: translate(-50%, -50%) scale(0.95);
-        }
-        #powerUpTimer {
-            font-size: 16px;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .plus-one-container {
-            position: fixed;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            transition: all 0.5s ease-out;
-        }
-        .plus-one-image {
-            width: 30px;
-            height: 30px;
-        }
-        .plus-one-text {
-            font-size: 20px;
-            font-weight: bold;
-            color: #4CAF50;
-            margin-left: 5px;
-        }
-        .level-up {
-            position: fixed;
-            font-size: 36px;
-            font-weight: bold;
-            color: #ff6b6b;
-            pointer-events: none;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
-        }
-        #cryptoMiningImage {
-            width: 80px;
-            height: 80px;
-            margin: 10px auto;
-            display: block;
-            transition: all 0.3s ease;
-        }
-        #cryptoMiningImage:hover {
-            transform: scale(1.1);
-        }
-        #leaderboard {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            max-width: 500px;
-            width: 90%;
-        }
-        #leaderboard h2 {
-            text-align: center;
-            margin-top: 0;
-        }
-        #leaderboard-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        #leaderboard-list li {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-        #playerNameContainer {
-            margin-top: 20px;
-            text-align: center;
-        }
-        #playerName {
-            font-size: 18px;
-            padding: 10px;
-            width: 100%;
-            max-width: 300px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-        }
-        #playerName::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        #enableAudioButton {
-            background-color: #9c27b0;
-            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4);
-            position: fixed;
-            top: 60px;
-            right: 10px;
-            z-index: 1000;
-        }
-        .button {
-            font-size: 18px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        .button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        #menu {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px;
-        }
-        .menu-button {
-            font-size: 16px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .menu-button.active {
-            background-color: rgba(255, 255, 255, 0.4);
-        }
-        .power-up-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            animation: powerUpPulse 1s ease-in-out infinite;
-        }
-        @keyframes powerUpPulse {
-            0% { box-shadow: inset 0 0 0 0 rgba(255, 215, 0, 0.5); }
-            50% { box-shadow: inset 0 0 0 30px rgba(255, 215, 0, 0); }
-            100% { box-shadow: inset 0 0 0 0 rgba(255, 215, 0, 0.5); }
-        }
-        #airdropTimer {
-            position: fixed;
-            top: 60px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 16px;
-            z-index: 1000;
-        }
-        #airdropImage {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            cursor: pointer;
-            display: none;
-        }
-        #goals {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            max-width: 500px;
-            width: 90%;
-        }
-        #goals h2 {
-            text-align: center;
-            margin-top: 0;
-        }
-        #goals ul {
-            padding-left: 20px;
-        }
-        #goals li {
-            margin-bottom: 10px;
-        }
-        @media (max-width: 500px) {
-            body {
-                padding: 10px;
-            }
-            .game-container, #leaderboard, #upgrades, #goals {
-                padding: 15px;
-            }
-            #stats {
-                flex-direction: column;
-                align-items: center;
-            }
-            #points, #level {
-                font-size: 18px;
-                margin-bottom: 5px;
-            }
-            #clickButton {
-                width: 200px;
-                height: 200px;
-            }
-            .menu-button {
-                font-size: 14px;
-                padding: 8px 15px;
-            }
-        }
-        @media (max-width: 600px) {
-            .upgrade-container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .upgrade-container div {
-                margin-bottom: 20px;
-            }
-            #cryptoMiningImage, #lidlBerlinerImage {
-                width: 200px;
-                height: 200px;
-            }
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-        .modal-content {
-            background-color: #fff;
-            color: #000;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        h2 {
-            color: #4CAF50;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .upgrade-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-top: 20px;
-        }
-    </style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: "Roboto", system-ui, sans-serif;
+      background: #0b0f1f;
+      color: #f5f7ff;
+    }
+
+    #game {
+      position: fixed;
+      inset: 0;
+    }
+
+    #hud {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px 18px;
+      background: rgba(10, 15, 32, 0.6);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+      z-index: 10;
+    }
+
+    #hud span {
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    #crosshair {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      transform: translate(-50%, -50%);
+      z-index: 9;
+      pointer-events: none;
+    }
+
+    #crosshair::before,
+    #crosshair::after {
+      content: "";
+      position: absolute;
+      background: #f5f7ff;
+      border-radius: 2px;
+    }
+
+    #crosshair::before {
+      width: 2px;
+      height: 18px;
+      left: 8px;
+      top: 0;
+    }
+
+    #crosshair::after {
+      width: 18px;
+      height: 2px;
+      left: 0;
+      top: 8px;
+    }
+
+    #overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, rgba(19, 32, 66, 0.9), rgba(3, 5, 12, 0.9));
+      z-index: 20;
+      text-align: center;
+      padding: 24px;
+    }
+
+    #overlay.hidden {
+      display: none;
+    }
+
+    .panel {
+      max-width: 420px;
+      background: rgba(15, 20, 40, 0.8);
+      border-radius: 18px;
+      padding: 28px 32px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .panel h1 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+
+    .panel p {
+      margin: 12px 0;
+      line-height: 1.5;
+      color: #d5d9ff;
+    }
+
+    .panel button {
+      margin-top: 18px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #4c7dff;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .panel button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(76, 125, 255, 0.35);
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 20, 40, 0.85);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 15;
+    }
+
+    #toast.show {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
-    <div id="game" class="game-container">
-        <div id="stats">
-            <div id="level">Level 1</div>
-            <div id="points">0 Thilonen</div>
-        </div>
-        <div id="progress-container">
-            <div id="progress-bar"></div>
-        </div>
-        <button id="clickButton" style="margin-top: -150px;">
-            <img src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2025-05-22_at_19.31.50-removebg-preview.png" alt="Click-Münze" style="width: 400%; height: 400%;">
-        </button>
-        <div id="powerUpTimer"></div>
+  <div id="game"></div>
+  <div id="hud">
+    <span id="score">Score: 0</span>
+    <span id="health">Shield: 100%</span>
+    <span id="wave">Welle: 1</span>
+  </div>
+  <div id="crosshair"></div>
+  <div id="overlay">
+    <div class="panel">
+      <h1>Simple 3D Shooter</h1>
+      <p>Bewege dich mit <strong>WASD</strong>, schaue mit der Maus und schieße mit <strong>Klick</strong>.</p>
+      <p>Überlebe so viele Wellen wie möglich. Gegner zerstören deine Schilde, wenn sie dich berühren.</p>
+      <button id="startButton">Start</button>
     </div>
+  </div>
+  <div id="toast">Neue Welle!</div>
 
-    <div id="upgrades" class="game-container" style="display: none;">
-        <h2>Upgrades</h2>
-        <div class="upgrade-container">
-            <div>
-                <img id="cryptoMiningImage" src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/lidl%20Crossaint-Photoroom.png" alt="Crypto Mining Gerät" style="width: 300px; height: 300px; object-fit: cover;">
-                <button id="cryptoMiningButton" class="button">Lidl hörnla (${cryptoMinerCost} Thilonen)</button>
-                <div id="cryptoMiningInfo">Thilonen Miner: ${cryptoMiners} (${(cryptoMiners * 0.1).toFixed(1)}/s)</div>
-            </div>
-            <div>
-                <img id="lidlBerlinerImage" src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/Lidl%20berliner-Photoroom.png" alt="Lidl Berliner" style="width: 300px; height: 300px; object-fit: cover;">
-                <button id="lidlBerlinerButton" class="button">Lidl krapfen (${lidlBerlinerCost} Thilonen)</button>
-                <div id="lidlBerlinerInfo">Lidl Berliner: ${lidlBerliners} (${(lidlBerliners * 1).toFixed(1)}/s)</div>
-            </div>
-        </div>
-    </div>
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+    import { PointerLockControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/PointerLockControls.js";
 
-    <div id="leaderboard" style="display: none;">
-        <h2>Bestenliste</h2>
-        <ol id="leaderboard-list"></ol>
-        <div id="playerNameContainer">
-            <label for="playerName">Dein Name:</label>
-            <input type="text" id="playerName" placeholder="Gib deinen Namen ein" maxlength="20" value="Anonym">
-        </div>
-    </div>
+    const container = document.getElementById("game");
+    const overlay = document.getElementById("overlay");
+    const startButton = document.getElementById("startButton");
+    const scoreDisplay = document.getElementById("score");
+    const healthDisplay = document.getElementById("health");
+    const waveDisplay = document.getElementById("wave");
+    const toast = document.getElementById("toast");
 
-    <div id="goals" style="display: none;">
-        <h2>Ziele</h2>
-        <ul>
-            <li>Besiege die Gegner, indem du Punkte sammelst und auf das Bild des aktuellen Gegners drückst.</li>
-            <li>Bei Erreichen des 10. Levels wird ein neuer Gegner freigeschaltet.</li>
-            <li>Sammle durch 2-minütige Airdrops zusätzliche Punkte, wenn du schnell genug bist.</li>
-            <li>Trage deinen Namen in die Rangliste ein.</li>
-            <li>Kaufe durch deine Punkte Krypto-Mining-Geräte, die dir offline Zusatzpunkte liefern!</li>
-        </ul>
-    </div>
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#0b0f1f");
+    scene.fog = new THREE.Fog("#0b0f1f", 10, 60);
 
-    <button id="enableAudioButton" class="button">Audio aktivieren</button>
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
+    camera.position.set(0, 2, 6);
 
-    <div id="menu">
-        <button class="menu-button active" data-section="game">Spiel</button>
-        <button class="menu-button" data-section="upgrades">Upgrades</button>
-        <button class="menu-button" data-section="leaderboard">Rangliste</button>
-        <button class="menu-button" data-section="goals">Ziele</button>
-    </div>
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
 
-    <div id="airdropTimer">Thilonischer Airdrop in: 2:00</div>
-    <img id="airdropImage" src="https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2025-05-22_at_19.31.50-removebg-preview.png" alt="Airdrop" style="display: none; position: fixed; width: 300px; height: 300px; cursor: pointer;">
+    const controls = new PointerLockControls(camera, renderer.domElement);
 
-    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
-    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
-    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
-    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
-    <audio class="clickSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/mixkit-sci-fi-click-900.wav" preload="auto"></audio>
-    <audio id="levelUpSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
-    <audio id="hundredPointsSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/wow-171498.mp3" preload="auto"></audio>
-    <audio id="airdropSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/splash-01-35899.mp3" preload="auto"></audio>
-    <audio id="upgradeSound" src="https://raw.githubusercontent.com/Memecoinmaker1/Clickrichapp/main/coin-257878.mp3" preload="auto"></audio>
+    const ambientLight = new THREE.AmbientLight("#9fb3ff", 0.6);
+    scene.add(ambientLight);
 
-    <div id="goalModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="closeModal">&times;</span>
-            <h2>Ziele</h2>
-            <ul id="goalsList">
-                <li>Bei jedem Level Up gibt es einen Doppelten Click Bonus für eine Minute!</li>
-                <li>Besiege die Gegner, indem du Punkte sammelst und auf das Bild des aktuellen Gegners drückst.</li>
-                <li>Bei Erreichen des 10. Levels wird ein neuer Gegner freigeschaltet.</li>
-                <li>Sammle durch 2-minütige Airdrops zusätzliche Punkte, wenn du schnell genug bist.</li>
-                <li>Trage deinen Namen in die Rangliste ein.</li>
-                <li>Kaufe durch deine Punkte Krypto-Mining-Geräte, die dir offline Zusatzpunkte liefern!</li>
-            </ul>
-            <button id="startGameButton">Spiel starten</button>
-        </div>
-    </div>
+    const directionalLight = new THREE.DirectionalLight("#ffffff", 1.1);
+    directionalLight.position.set(5, 10, 7);
+    scene.add(directionalLight);
 
-    <script>
-        let points = 0;
-        let level = 1;
-        let pointMultiplier = 1;
-        let powerUpActive = false;
-        let cryptoMiners = 0;
-        let cryptoMinerCost = 500;
-        let playerName = 'Anonym';
-        let audioEnabled = false;
-        let lastHundredPoints = 0;
-        const pointsDisplay = document.getElementById('points');
-        const levelDisplay = document.getElementById('level');
-        const clickButton = document.getElementById('clickButton');
-        const powerUpTimer = document.getElementById('powerUpTimer');
-        const cryptoMiningButton = document.getElementById('cryptoMiningButton');
-        const cryptoMiningInfo = document.getElementById('cryptoMiningInfo');
-        const clickSounds = document.querySelectorAll('.clickSound');
-        const levelUpSound = document.getElementById('levelUpSound');
-        const hundredPointsSound = document.getElementById('hundredPointsSound');
-        const progressBar = document.getElementById('progress-bar');
-        const playerNameInput = document.getElementById('playerName');
-        const leaderboardList = document.getElementById('leaderboard-list');
-        const enableAudioButton = document.getElementById('enableAudioButton');
-        const airdropTimer = document.getElementById('airdropTimer');
-        const airdropImage = document.getElementById('airdropImage');
-        const airdropSound = document.getElementById('airdropSound');
-        let currentSoundIndex = 0;
-        let airdropTimerInterval;
-        let airdropTimeLeft = 120;
-        let lidlBerlinerCost = 1500; // Anfangskosten für den Lidl Berliner
-        let lidlBerliners = 0; // Anzahl der Lidl Berliner
+    const floorGeometry = new THREE.PlaneGeometry(200, 200, 10, 10);
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: "#1b244a", roughness: 0.8, metalness: 0.2 });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = 0;
+    scene.add(floor);
 
-        const levelThresholds = [100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000];
+    const grid = new THREE.GridHelper(200, 40, "#3a4a8b", "#1c254c");
+    grid.position.y = 0.01;
+    scene.add(grid);
 
-        loadGame();
+    const player = {
+      velocity: new THREE.Vector3(),
+      direction: new THREE.Vector3(),
+      speed: 10,
+      health: 100,
+      score: 0,
+      wave: 1,
+    };
 
-        clickButton.addEventListener('click', () => {
-            addPoints(1 * pointMultiplier);
-        });
+    const enemyMaterial = new THREE.MeshStandardMaterial({ color: "#ff5c5c", emissive: "#6f1a1a", emissiveIntensity: 0.5 });
+    const enemyGeometry = new THREE.SphereGeometry(0.6, 18, 18);
+    const enemies = [];
 
-        function addPoints(amount) {
-            points += amount;
-            updateDisplay();
-            createPlusOne(amount);
-            playClickSound();
-            updateProgressBar();
-            checkLevelUp();
-            checkHundredPoints();
-            saveGame();
-            animateClick();
+    const keys = {
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+    };
+
+    const raycaster = new THREE.Raycaster();
+    const clock = new THREE.Clock();
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    function spawnEnemy(radius = 20) {
+      const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial.clone());
+      const angle = Math.random() * Math.PI * 2;
+      const distance = radius + Math.random() * 15;
+      enemy.position.set(
+        Math.cos(angle) * distance,
+        0.6,
+        Math.sin(angle) * distance
+      );
+      enemy.userData.speed = 1.2 + Math.random();
+      scene.add(enemy);
+      enemies.push(enemy);
+    }
+
+    function spawnWave() {
+      const count = 6 + player.wave * 2;
+      for (let i = 0; i < count; i += 1) {
+        spawnEnemy(18 + player.wave * 2);
+      }
+      showToast(`Welle ${player.wave}`);
+    }
+
+    function resetGame() {
+      player.health = 100;
+      player.score = 0;
+      player.wave = 1;
+      enemies.splice(0).forEach((enemy) => scene.remove(enemy));
+      camera.position.set(0, 2, 6);
+      spawnWave();
+      updateHud();
+    }
+
+    function updateHud() {
+      scoreDisplay.textContent = `Score: ${player.score}`;
+      healthDisplay.textContent = `Shield: ${Math.max(0, Math.floor(player.health))}%`;
+      waveDisplay.textContent = `Welle: ${player.wave}`;
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function shoot() {
+      if (!controls.isLocked) {
+        return;
+      }
+      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const hits = raycaster.intersectObjects(enemies, false);
+      if (hits.length > 0) {
+        const target = hits[0].object;
+        target.userData.hitFlash = 0.12;
+        player.score += 10;
+        scene.remove(target);
+        enemies.splice(enemies.indexOf(target), 1);
+        if (enemies.length === 0) {
+          player.wave += 1;
+          spawnWave();
+        } else {
+          spawnEnemy(22 + player.wave * 2);
+        }
+        updateHud();
+      }
+    }
+
+    function updateEnemies(delta) {
+      enemies.forEach((enemy) => {
+        const direction = new THREE.Vector3().subVectors(camera.position, enemy.position);
+        direction.y = 0;
+        direction.normalize();
+        enemy.position.addScaledVector(direction, enemy.userData.speed * delta);
+
+        if (enemy.userData.hitFlash) {
+          enemy.userData.hitFlash -= delta;
+          enemy.material.emissiveIntensity = 1.4;
+        } else {
+          enemy.material.emissiveIntensity = 0.5;
         }
 
-        function animateClick() {
-            clickButton.style.transform = 'translate(-50%, -50%) scale(0.95)';
-            setTimeout(() => {
-                clickButton.style.transform = 'translate(-50%, -50%) scale(1)';
-            }, 100);
+        const distance = enemy.position.distanceTo(camera.position);
+        if (distance < 1.5) {
+          player.health -= 18 * delta;
         }
+      });
+    }
 
-        cryptoMiningButton.addEventListener('click', buyCryptoMiner);
+    function updateMovement(delta) {
+      player.velocity.set(0, 0, 0);
 
-        playerNameInput.addEventListener('change', () => {
-            playerName = playerNameInput.value.trim() || 'Anonym';
-            saveGame();
-            updateLeaderboard();
-        });
+      player.direction.set(
+        Number(keys.right) - Number(keys.left),
+        0,
+        Number(keys.backward) - Number(keys.forward)
+      );
 
-        enableAudioButton.addEventListener('click', toggleAudio);
+      if (player.direction.lengthSq() > 0) {
+        player.direction.normalize();
+        const moveX = player.direction.x * player.speed * delta;
+        const moveZ = player.direction.z * player.speed * delta;
+        controls.moveRight(moveX);
+        controls.moveForward(moveZ);
+      }
+    }
 
-        function toggleAudio() {
-            audioEnabled = !audioEnabled;
-            enableAudioButton.textContent = audioEnabled ? 'Audio deaktivieren' : 'Audio aktivieren';
-            if (audioEnabled) {
-                clickSounds.forEach(sound => sound.play().catch(() => {}));
-                levelUpSound.play().catch(() => {});
-            }
+    function animate() {
+      const delta = Math.min(clock.getDelta(), 0.05);
+      if (controls.isLocked) {
+        updateMovement(delta);
+        updateEnemies(delta);
+        updateHud();
+
+        if (player.health <= 0) {
+          controls.unlock();
+          overlay.classList.remove("hidden");
+          overlay.querySelector("h1").textContent = "Game Over";
+          overlay.querySelector("p").innerHTML = "Deine Schilde sind leer. Klicke auf Start, um es erneut zu versuchen.";
+          return;
         }
+      }
 
-        function activatePowerUp() {
-            if (!powerUpActive) {
-                powerUpActive = true;
-                pointMultiplier = 2;
-                let timeLeft = 60;
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
 
-                const powerUpAnimation = document.createElement('div');
-                powerUpAnimation.className = 'power-up-animation';
-                document.body.appendChild(powerUpAnimation);
+    startButton.addEventListener("click", () => {
+      resetGame();
+      controls.lock();
+    });
 
-                const powerUpInterval = setInterval(() => {
-                    timeLeft--;
-                    powerUpTimer.textContent = `Power-Up aktiv: ${timeLeft}s`;
+    controls.addEventListener("lock", () => {
+      overlay.classList.add("hidden");
+    });
 
-                    if (timeLeft <= 0) {
-                        clearInterval(powerUpInterval);
-                        powerUpActive = false;
-                        pointMultiplier = 1;
-                        powerUpTimer.textContent = '';
-                        document.body.removeChild(powerUpAnimation);
-                    }
-                    updateDisplay();
-                    saveGame();
-                }, 1000);
-            }
-        }
+    controls.addEventListener("unlock", () => {
+      overlay.classList.remove("hidden");
+    });
 
-        function buyCryptoMiner() {
-            if (points >= cryptoMinerCost) {
-                points -= cryptoMinerCost;
-                cryptoMiners++;
-                cryptoMinerCost = Math.floor(cryptoMinerCost * 1.5);
-                updateDisplay();
-                animateCryptoMiningImage();
-                playUpgradeSound();
-                saveGame();
-            }
-        }
+    window.addEventListener("resize", onWindowResize);
+    window.addEventListener("keydown", (event) => {
+      switch (event.code) {
+        case "KeyW":
+          keys.forward = true;
+          break;
+        case "KeyS":
+          keys.backward = true;
+          break;
+        case "KeyA":
+          keys.left = true;
+          break;
+        case "KeyD":
+          keys.right = true;
+          break;
+        default:
+          break;
+      }
+    });
 
-        function animateCryptoMiningImage() {
-            const image = document.getElementById('cryptoMiningImage');
-            image.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                image.style.transform = 'scale(1)';
-            }, 200);
-        }
+    window.addEventListener("keyup", (event) => {
+      switch (event.code) {
+        case "KeyW":
+          keys.forward = false;
+          break;
+        case "KeyS":
+          keys.backward = false;
+          break;
+        case "KeyA":
+          keys.left = false;
+          break;
+        case "KeyD":
+          keys.right = false;
+          break;
+        default:
+          break;
+      }
+    });
 
-        function updateDisplay() {
-            pointsDisplay.textContent = `${Math.floor(points)} Thilonen`;
-            levelDisplay.textContent = `Level ${level}`;
-            cryptoMiningButton.textContent = `Lidl Crossaint (${cryptoMinerCost} Thilonen)`;
-            cryptoMiningButton.disabled = points < cryptoMinerCost;
-            cryptoMiningInfo.textContent = `Thilonen Miner: ${cryptoMiners} (${(cryptoMiners * 0.1).toFixed(1)}/s)`;
-            
-            lidlBerlinerButton.textContent = `Lidl Berliner (${lidlBerlinerCost} Thilonen)`;
-            lidlBerlinerButton.disabled = points < lidlBerlinerCost;
-            lidlBerlinerInfo.textContent = `Lidl Berliner: ${lidlBerliners} (${(lidlBerliners * 1).toFixed(1)}/s)`;
-        }
+    window.addEventListener("click", shoot);
 
-        function playClickSound() {
-            if (audioEnabled) {
-                clickSounds[Math.floor(Math.random() * clickSounds.length)].play().catch(() => {});
-            }
-        }
-
-        function updateProgressBar() {
-            const currentThreshold = levelThresholds[level - 1] || levelThresholds[levelThresholds.length - 1];
-            const previousThreshold = level > 1 ? levelThresholds[level - 2] : 0;
-            const progress = ((points - previousThreshold) / (currentThreshold - previousThreshold)) * 100;
-            progressBar.style.width = `${progress}%`;
-        }
-
-        function checkLevelUp() {
-            if (level < 10 && levelThresholds[level - 1] && points >= levelThresholds[level - 1]) {
-                level++;
-                levelDisplay.textContent = `Level ${level}`;
-                createLevelUpAnimation();
-                if (audioEnabled) {
-                    levelUpSound.play().catch(() => {});
-                }
-                updateProgressBar();
-                saveGame();
-                activatePowerUp();
-            }
-        }
-
-        function checkHundredPoints() {
-            if (Math.floor(points / 100) > lastHundredPoints) {
-                lastHundredPoints = Math.floor(points / 100);
-                if (audioEnabled) {
-                    hundredPointsSound.play().catch(() => {});
-                }
-            }
-        }
-
-        function createPlusOne(amount) {
-            const plusOne = document.createElement('div');
-            plusOne.className = 'plus-one-container';
-            plusOne.style.left = `${Math.random() * (window.innerWidth - 100)}px`;
-            plusOne.style.top = `${Math.random() * (window.innerHeight - 50)}px`;
-
-            const plusOneImage = document.createElement('img');
-            plusOneImage.src = 'https://github.com/Memecoinmaker1/Clickrichapp/raw/main/WhatsApp_Image_2025-05-22_at_19.31.50-removebg-preview.png';
-            plusOneImage.className = 'plus-one-image';
-            plusOneImage.style.width = '100px';
-            plusOneImage.style.height = '100px';
-            plusOne.appendChild(plusOneImage);
-
-            const plusOneText = document.createElement('span');
-            plusOneText.textContent = `+${amount}`;
-            plusOneText.className = 'plus-one-text';
-            plusOne.appendChild(plusOneText);
-
-            document.body.appendChild(plusOne);
-
-            setTimeout(() => {
-                plusOne.style.opacity = '0';
-                plusOne.style.transform = 'translateY(-50px)';
-                setTimeout(() => {
-                    document.body.removeChild(plusOne);
-                }, 500);
-            }, 100);
-        }
-
-        function createLevelUpAnimation() {
-            const levelUp = document.createElement('div');
-            levelUp.className = 'level-up';
-            levelUp.textContent = 'Level Up!';
-            levelUp.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
-            levelUp.style.top = `${Math.random() * (window.innerHeight - 100)}px`;
-
-            document.body.appendChild(levelUp);
-
-            setTimeout(() => {
-                levelUp.style.opacity = '0';
-                levelUp.style.transform = 'scale(1.5)';
-                setTimeout(() => {
-                    document.body.removeChild(levelUp);
-                }, 500);
-            }, 100);
-        }
-
-        function saveGame() {
-            const gameData = {
-                points,
-                level,
-                cryptoMiners,
-                playerName
-            };
-            localStorage.setItem('gameData', JSON.stringify(gameData));
-            updateLeaderboard();
-        }
-
-        function loadGame() {
-            const savedData = localStorage.getItem('gameData');
-            if (savedData) {
-                const gameData = JSON.parse(savedData);
-                points = gameData.points || 0;
-                level = gameData.level || 1;
-                cryptoMiners = gameData.cryptoMiners || 0;
-                playerName = gameData.playerName || 'Anonym';
-                playerNameInput.value = playerName;
-            }
-            updateDisplay();
-            updateProgressBar();
-            updateLeaderboard();
-        }
-
-        function updateLeaderboard() {
-            let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-            
-            const playerIndex = leaderboard.findIndex(entry => entry.name === playerName);
-            if (playerIndex !== -1) {
-                leaderboard[playerIndex].points = Math.max(leaderboard[playerIndex].points, points);
-            } else {
-                leaderboard.push({ name: playerName, points: points });
-            }
-
-            leaderboard.sort((a, b) => b.points - a.points);
-            leaderboard = leaderboard.slice(0, 10);
-            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-            displayLeaderboard(leaderboard);
-        }
-
-        function displayLeaderboard(leaderboard) {
-            leaderboardList.innerHTML = '';
-            leaderboard.forEach((entry, index) => {
-                const li = document.createElement('li');
-                li.textContent = `${index + 1}. ${entry.name}: ${Math.floor(entry.points)} Thilonen`;
-                leaderboardList.appendChild(li);
-            });
-        }
-
-        function showSection(sectionId) {
-            document.getElementById('game').style.display = 'none';
-            document.getElementById('upgrades').style.display = 'none';
-            document.getElementById('leaderboard').style.display = 'none';
-            document.getElementById('goals').style.display = 'none';
-            document.getElementById(sectionId).style.display = 'flex';
-
-            const menuButtons = document.querySelectorAll('.menu-button');
-            menuButtons.forEach(button => button.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function startAirdropTimer() {
-            console.log("startAirdropTimer aufgerufen");
-            clearInterval(airdropTimerInterval);
-            airdropTimeLeft = 120;
-            updateAirdropTimer();
-
-            airdropTimerInterval = setInterval(() => {
-                console.log("Timer-Intervall ausgeführt, verbleibende Zeit:", airdropTimeLeft);
-                airdropTimeLeft--;
-                updateAirdropTimer();
-
-                if (airdropTimeLeft <= 0) {
-                    console.log("Timer abgelaufen, zeige Airdrop");
-                    clearInterval(airdropTimerInterval);
-                    showAirdrop();
-                }
-            }, 1000);
-        }
-
-        function updateAirdropTimer() {
-            const minutes = Math.floor(airdropTimeLeft / 60);
-            const seconds = airdropTimeLeft % 60;
-            const timerText = `Thilonischer Airdrop in: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-            console.log("Aktualisiere Timer-Anzeige:", timerText);
-            airdropTimer.textContent = timerText;
-        }
-
-        function showAirdrop() {
-            console.log("showAirdrop aufgerufen");
-            const randomX = Math.random() * (window.innerWidth - 100);
-            const randomY = Math.random() * (window.innerHeight - 100);
-            
-            airdropImage.style.left = `${randomX}px`;
-            airdropImage.style.top = `${randomY}px`;
-            airdropImage.style.display = 'block';
-
-            // Airdrop-Sound abspielen
-            if (audioEnabled) {
-                airdropSound.play().catch(error => {
-                    console.error("Fehler beim Abspielen des Airdrop-Sounds:", error);
-                });
-            }
-
-            setTimeout(() => {
-                console.log("Airdrop-Timeout abgelaufen, verstecke Airdrop");
-                if (airdropImage.style.display !== 'none') {
-                    airdropImage.style.display = 'none';
-                    startAirdropTimer();
-                }
-            }, 1000);
-        }
-
-        airdropImage.addEventListener('click', () => {
-            console.log("Airdrop geklickt");
-            addPoints(200);
-            airdropImage.style.display = 'none';
-            startAirdropTimer();
-            if (audioEnabled) {
-                airdropSound.play().catch(error => {
-                    console.error("Fehler beim Abspielen des Sounds:", error);
-                });
-            }
-        });
-
-        function showGoals() {
-            const modal = document.getElementById('goalModal');
-            modal.style.display = 'block';
-
-            const closeButton = document.getElementById('closeModal');
-            closeButton.onclick = function() {
-                modal.style.display = 'none';
-            }
-
-            const startGameButton = document.getElementById('startGameButton');
-            startGameButton.onclick = function() {
-                modal.style.display = 'none';
-                startAirdropTimer();
-            }
-
-            window.onclick = function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            }
-        }
-
-        window.addEventListener('load', () => {
-            console.log("Seite geladen, zeige Ziele an");
-            showGoals();
-            startAirdropTimer();
-        });
-
-        setInterval(() => {
-            points += cryptoMiners * 0.1;
-            updateDisplay();
-            updateProgressBar();
-            checkLevelUp();
-            checkHundredPoints();
-            saveGame();
-        }, 1000);
-
-        setInterval(saveGame, 30000);
-
-        document.querySelectorAll('.menu-button').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const sectionId = event.target.getAttribute('data-section');
-                showSection(sectionId);
-            });
-        });
-
-        showSection('game');
-        updateDisplay();
-        updateProgressBar();
-        updateLeaderboard();
-
-        lidlBerlinerButton.addEventListener('click', buyLidlBerliner);
-
-        function buyLidlBerliner() {
-            if (points >= lidlBerlinerCost) {
-                points -= lidlBerlinerCost;
-                lidlBerliners++;
-                lidlBerlinerCost = Math.floor(lidlBerlinerCost * 1.5); // Preis erhöhen
-                updateDisplay();
-                animateLidlBerlinerImage();
-                playUpgradeSound();
-                saveGame();
-            }
-        }
-
-        function animateLidlBerlinerImage() {
-            const image = document.getElementById('lidlBerlinerImage');
-            image.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                image.style.transform = 'scale(1)';
-            }, 200);
-        }
-
-        function playUpgradeSound() {
-            const upgradeSound = document.getElementById('upgradeSound');
-            upgradeSound.play().catch(error => {
-                console.error("Fehler beim Abspielen des Upgrade-Sounds:", error);
-            });
-        }
-    </script>
+    resetGame();
+    animate();
+  </script>
 </body>
 </html>
